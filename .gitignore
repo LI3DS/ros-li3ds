@@ -1,3 +1,10 @@
+#
+build/
+
+#
+.bash_history
+.lesshst
+
 # Compiled Object files
 *.slo
 *.lo
