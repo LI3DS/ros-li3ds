@@ -11,21 +11,33 @@ help:		## Show this help. (press tab to complete)
 clean:		## clean all (volumes, images, rosserial, arduino, ins)
 clean: clean-volumes clean-images
 
-clean-volumes: clean-rosserial-volumes clean-arduino-volumes
+clean-volumes: clean-rosserial-volumes clean-arduino-volumes clean-ins-volumes
 
-clean-images: clean-rosserial-images clean-arduino-images
+clean-images: clean-rosserial-images clean-arduino-images clean-ins-images
 
 clean-rosserial-volumes:
 	(cd rosserial/latest; delete_volume.sh 2> /dev/null || true)
 
 clean-arduino-volumes:
-	(cd arduino; delete_volume.sh 2> /dev/null | true)
+	(cd arduino; delete_volume.sh 2> /dev/null || true)
 
+clean-ins-volumes:
+	(cd ins; delete_volume.sh 2> /dev/null || true)
+	
 clean-arduino-images:
 	(cd arduino; rmi.sh 2> /dev/null || true)
 
 clean-rosserial-images:
 	(cd rosserial/latest; rmi.sh 2> /dev/null || true)
+
+clean-ins-images:
+	(cd ins; rmi.sh 2> /dev/null || true)
+
+##-------------
+
+.apt.conf:
+
+.gitconfig:
 
 ##-------------
 
@@ -38,7 +50,7 @@ rosserial-volumes:
 
 rosserial-images: rosserial-volumes
 	(cd rosserial/latest; 			\
-		if [ -f apt.conf ]; then 	\
+		if [ ! -f apt.conf ]; then 	\
 			touch apt.conf; 		\
 		fi; 						\
 		build.sh; run.sh 			\
@@ -86,8 +98,23 @@ ins-all: ins-volumes ins-images ins-build
 ins-volumes:
 	(cd ins; create_volume.sh)
 
+#ins-images: ins-volumes
+#	(cd ins; 			\
+#		if [ -f apt.conf ]; then 	\
+#			touch apt.conf; 		\
+#		fi; 						\
+#		build.sh	)
+
 ins-images:
-	(cd ins; build.sh)
+	(cd ins; 			\
+		if [ ! -f apt.conf ]; then 	\
+			touch apt.conf; 		\
+		fi; 						\
+		if [ ! -f .gitconfig ]; then 	\
+			cp ~/.gitconfig .; 		\
+		fi; 						\
+		build.sh		 			\
+	)
 
 ins-build:
 	(cd ins; run.sh 'bash -c "/root/build.sh"')
