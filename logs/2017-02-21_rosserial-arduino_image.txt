@@ -1,5 +1,8 @@
-make arduino  0,21s user 0,08s system 0% cpu 3:18,04 total
+Après un clean des images, volumes docker:
+    make arduino  0,21s user 0,08s system 0% cpu 3:18,04 total
 
+Résultats:
+---------
 li3ds/arduino                    latest                     205840ca7632        About a minute ago   1.26 GB
 ros                              indigo-rosserial-arduino   f8ba41c44269        3 minutes ago        973 MB
 
@@ -7,6 +10,12 @@ $ docker volume ls
 DRIVER              VOLUME NAME
 local               li3ds_catkin_ws
 
+Configuration de l'host:
+-----------------------
 $ inxi -C
 CPU:       Dual core Intel Core i7-5500U (-HT-MCP-) cache: 4096 KB
            clock speeds: max: 3000 MHz 1: 2386 MHz 2: 2312 MHz 3: 2559 MHz
+
+Une fois les images, volumes build/crés:
+    make arduino  0,09s user 0,03s system 1% cpu 8,988 total
+Pour compiler (ou checker s'il faut recompiler), et uploader le sketch sur l'Arduino.
