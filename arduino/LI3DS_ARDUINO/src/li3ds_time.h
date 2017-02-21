@@ -35,13 +35,43 @@ void time_setup() {
     //--------------------------
 }
 
-void time_loop() {
+#define ROS_DELAY   50  // attente de 50ms dans la phase de temporisation de notre boucle temporelle
+                        // => ~ 20Hz
+
+#define PP_TEMPLATE_DECL_NODEHANDLE(_prefix) \
+    _prefix<class Hardware,         \
+             int MAX_SUBSCRIBERS,   \
+             int MAX_PUBLISHERS,    \
+             int INPUT_SIZE,        \
+             int OUTPUT_SIZE>       \
+
+#define PP_TEMPLATE_INST_NODEHANDLE(_prefix) \
+    _prefix<Hardware,           \
+            MAX_SUBSCRIBERS,    \
+            MAX_PUBLISHERS,     \
+            INPUT_SIZE,         \
+            OUTPUT_SIZE>        \
+
+
+PP_TEMPLATE_DECL_NODEHANDLE(template)
+void time_loop(PP_TEMPLATE_INST_NODEHANDLE(ros::NodeHandle_) &nh) {
     //----------------------
     // Time: Synchronisation
     //----------------------
     IncrementTime();
 
     while (millis() - old_time < 1000) {
+        //----------------------
+        // ROS
+        //----------------------
+        // Pendant l'attente (temporisation)
+        // On continue de faire tourner "la roue" ROS
+        // sinon on risque un "Lost device synchronisation ..."
+        // car ROS peut considérer trop long l'appel entre deux nh.spinOnce()
+        // avec notre temporisition (tous les 1hz)
+        nh.spinOnce();
+        delay(ROS_DELAY);
+        //----------------------
     }
     old_time = millis();
 }

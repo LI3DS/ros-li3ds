@@ -21,9 +21,10 @@
 
 #include "li3ds_gps.h"
 #include "li3ds_time.h"
-#include "li3ds_camlight.h"
+//#include "li3ds_camlight.h"
+#include "li3ds_leds.h"
 #include "li3ds_pps.h"
-#include "PILOTE-PLATEFORME-LI3DS.h"
+
 
 inline void activateTrig();
 inline void desactivateTrig();
@@ -36,13 +37,21 @@ const byte ledPin = 13; // for led pin
 // variables will change:
 volatile int buttonState = 0;         // variable for reading the pushbutton status
 
+#define ROS_MAX_SUBSCRIBERS 0
+#define ROS_MAX_PUBLISHERS  2
+#define ROS_INPUT_SIZE      0
+#define ROS_OUTPUT_SIZE     150
+
 // url: http://answers.ros.org/question/28890/using-rosserial-for-a-atmega168arduino-based-motorcontroller/
 // ros::NodeHandle  nh;
-ros::NodeHandle_<ArduinoHardware, 2, 2, 80, 105> nh;
+//ros::NodeHandle_<ArduinoHardware, 2, 2, 80, 105> nh;
+ros::NodeHandle_<ArduinoHardware, ROS_MAX_SUBSCRIBERS,  ROS_MAX_PUBLISHERS, ROS_INPUT_SIZE, ROS_OUTPUT_SIZE> nh;
+// ros::NodeHandle nh;     // standard settings (depend on which Arduino board we have)
 
 //#define BAUDS 9600
 #define BAUDS 115200    // ps: faire attention à la vitesse de transfert, ca peut être sensible
                         // et provoquer des erreurs/warnings avec ROS::Rosserial
+//#define BAUDS 57600
 
 //std_msgs::Int32 msg_arduino_trig;
 //ros::Publisher chatter("arduino_trig", &msg_arduino_trig);
@@ -86,7 +95,13 @@ void setup() {
     //--------------------------
     // CamLight
     //--------------------------
-    camlight_setup(nh);
+    //camlight_setup(nh);
+
+    //--------------------------
+    // LEDS
+    //--------------------------
+    //led_setup(nh);
+
 
     //--------------------------
     // Interruption
@@ -113,7 +128,7 @@ void setup() {
  */
 void loop() {
     // Calcul du temps et temporisation 1hz
-    time_loop();
+    time_loop(nh);  // on passe le gestionnaire de node ROS
 
     // A la fin de la seconde, on lance les process
     // - Activation du trig electrique: PPS
@@ -128,7 +143,8 @@ void loop() {
     // ps: On pourrait tout simplement recabler le fil de la CamLight
     // sur la pin du PPS (12)
     activateTrig();
-    camlight_loop();
+    // camlight_loop();
+    //led_loop();
 
     // problem avec ROSSERIAL et les pins interrupts d'arduino (pb de synch.)
     // on active le trig cote arduino "a la main"
@@ -169,11 +185,13 @@ inline void receiveTrig()
     // url: https://www.arduino.cc/en/Reference/Micros
     msg_arduino_trig.data = micros();  // get Arduino clock
     chatter.publish( &msg_arduino_trig );  // send ROS message with this clock
+
     //
     msg_arduino_trig_timestamp.seq = id_trig;
     msg_arduino_trig_timestamp.stamp = nh.now();
     msg_arduino_trig_timestamp.frame_id = gprmc;
     chatter_2.publish( &msg_arduino_trig_timestamp );
+
     //
     nh.spinOnce();
 }
