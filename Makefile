@@ -35,16 +35,15 @@ rosserial-volumes:
 	(cd rosserial/latest; create_volume.sh)
 
 rosserial-images: rosserial-volumes
-	(cd rosserial/latest; \
-		if [ ! -f apt.conf ]; then
-			touch apt.conf
-		fi;	\
-		build.sh;	\
-		run.sh)
+	(cd rosserial/latest; 			\
+		if [ -f apt.conf ]; then 	\
+			touch apt.conf; 		\
+		fi; 						\
+		build.sh; run.sh 			\
+	)
 
 arduino: arduino-all
 arduino-all: arduino-volumes arduino-images	\
-	arduino-clean			\
 	arduino-configure		\
 	arduino-build			\
 	arduino-upload
@@ -66,6 +65,12 @@ arduino-build:
 arduino-upload:
 	(cd arduino; run.sh 'bash -c "/root/upload.sh"')
 
+ins: ins-all
+ins-all: ins-volumes ins-images
+
+ins-volumes:
+	(cd ins; create_volume.sh)
+
 ins-images:
-	(cd ins
+	(cd ins; build.sh)
 	

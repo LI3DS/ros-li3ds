@@ -18,3 +18,6 @@ DOCKER_RUN_OPTIONS+=" -v li3ds_overlay_ws:/root/overlay_ws "
 # share USB/serial sbg ellipse-n device
 # url: https://reprage.com/post/how-to-deploy-docker-containers-to-an-arduino
 DOCKER_RUN_OPTIONS+=" --privileged -v /dev/bus/usb:/dev/bus/usb "
+
+DOCKER_VOLUME_DRIVER="local"
+DOCKER_VOLUME_NAME="li3ds_overlay_ws"
