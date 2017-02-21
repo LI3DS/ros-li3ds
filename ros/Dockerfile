@@ -1,0 +1,1 @@
+FROM ros:indigo-ros-core
