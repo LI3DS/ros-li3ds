@@ -48,3 +48,20 @@ urls:
 http://stackoverflow.com/questions/37933204/building-common-dependencies-with-docker-compose
 
 Use a Makefile. docker-compose is not designed to build chains of images, it's designed for running containers.
+
+
+2017-02-21:
+INS:
+1. Creation de volume: li3ds_overlay_ws
+2. Build de l'image: li3ds/ins:latest
+3. 
+
+!!!! Il faut que la var env ROS_CATKIN_WS soit set !!!!
+# echo $ROS_CATKIN_WS/
+/catkin_ws/
+
+(rm -r overlay_ws)
+source entry-point.sh
+source ./scripts/create_overlay_ws.sh
+source ./scripts/get_and_build_with_catkin.sh [potentiellement x2]
+launch_roslaunch_on_ellipse_n.sh
