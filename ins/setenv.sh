@@ -14,6 +14,7 @@ DOCKER_RUN_OPTIONS+="						\
 #
 #DOCKER_RUN_OPTIONS+=" --no-cache "
 DOCKER_RUN_OPTIONS+=" -v li3ds_overlay_ws:/root/overlay_ws "
+DOCKER_RUN_OPTIONS+=" -v $(realpath ./scripts):/root/scripts "
 
 # share USB/serial sbg ellipse-n device
 # url: https://reprage.com/post/how-to-deploy-docker-containers-to-an-arduino
