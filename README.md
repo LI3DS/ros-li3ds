@@ -43,3 +43,8 @@ urls:
 - http://wiki.ros.org/rosinstall_generator
 - http://answers.ros.org/question/194763/resolving-package-dependencies-in-a-catkin-ws/
 - http://wiki.ros.org/fr/ROS/Tutorials/NavigatingTheFilesystem
+
+
+http://stackoverflow.com/questions/37933204/building-common-dependencies-with-docker-compose
+
+Use a Makefile. docker-compose is not designed to build chains of images, it's designed for running containers.
