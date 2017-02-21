@@ -1,90 +1,57 @@
-version: '2'
+version: '3'
+
+# urls:
+# - https://docs.docker.com/compose/compose-file/#volume-configuration-reference
+# - https://www.linux.com/learn/docker-volumes-and-networks-compose
 
 services:
-  # definition du ROS Master
+
   ros_master:
     image: ros:indigo-ros-core
-
-    build:
-        context: ros/.
-
     container_name: rosnode_master
-    
     command:
         - roscore
 
-  rosserial-arduino:
-    image: ros:indigo-rosserial-arduino
+  # Definition du ROS Node pour l'Arduino
+  ros_li3ds_arduino:
+    container_name: rosnode_li3ds_arduino
+
+    image: li3ds/arduino:latest
+
+    devices:
+      - "/dev/ttyACM0:/dev/ttyACM0"
+
+    depends_on:
+      - "ros_master"
+
+    environment:
+      - "ROS_HOSTNAME=ros_li3ds_arduino"
+      - "ROS_MASTER_URI=http://ros_master:11311"
+
+    command: rosrun rosserial_python serial_node.py /dev/ttyACM0 _baud:=115200
+
+  ros_li3ds_ins:
+    container_name: rosnode_li3ds_ins
+
+    image: li3ds/ins:latest
+
+    devices:
+      - "/dev/ttyUSB0:/dev/ttyUSB0"
+
+    depends_on:
+      - "ros_master"
+
+    environment:
+      - "ROS_HOSTNAME=rosnode_li3ds_ins"
+      - "ROS_MASTER_URI=http://ros_master:11311"
     
-    build:      
-      context: rosserial/latest/.
-
-    # # Dépendance en terme de noeuds ROS (faudrait rajouter 'rosserial')
-    # depends_on:
-    #     - "ros_master"
-    # environment:
-    #   - "ROS_HOSTNAME=ros_arduino"
-    #   - "ROS_MASTER_URI=http://ros_master:11311"
-
     volumes:
-      - rosserial-arduino:/catkin_ws    
+      - li3ds_catkin_ws:/catkin_ws
 
-  # # Definition du ROS Node pour l'Arduino
-  # ros_arduino:
-  #   # Dépendance en terme de noeuds ROS (faudrait rajouter 'rosserial')
-  #   depends_on:
-  #       - "ros_master"
+    command: /root/run.sh
 
-  #   container_name: rosnode_arduino
-
-  #   build:
-  #       context: arduino/latest/.
-  #       args:
-  #           - http_proxy
-  #           - https_proxy
-  #           - no_proxy
-
-  #   # tag image
-  #   image: 172.20.250.99:5000/li3ds/arduino:latest
-
-  #   # transmission au node de la connection série par USB
-  #   # TODO: faudrait le passer en paramètre (argument de commande)
-  #   devices:
-  #       - "/dev/ttyACM0:/dev/ttyACM0"
-
-  #   environment:
-  #       - "ROS_HOSTNAME=ros_arduino"
-  #       - "ROS_MASTER_URI=http://ros_master:11311"
-
-  #   command: rosrun rosserial_python serial_node.py /dev/ttyACM0 _baud:=115200
-
-  # # Definition du ROS Node pour l'Arduino
-  # ros_arduino_dev:
-  #   container_name: rosnode_arduino_dev
-
-  #  # tag image
-  #   image: 172.20.250.99:5000/li3ds/arduino:latest
-
-  #   # transmission au node de la connection série par USB
-  #   # TODO: faudrait le passer en paramètre (argument de commande)
-  #   devices:
-  #       - "/dev/ttyACM0:/dev/ttyACM0"
-
-  #   # Dépendance en terme de noeuds ROS (faudrait rajouter 'rosserial')
-  #   depends_on:
-  #       - "ros_master"
-  #       - "ros_arduino"
-
-  #   environment:
-  #       - "ROS_HOSTNAME=ros_arduino_dev"
-  #       - "ROS_MASTER_URI=http://ros_master:11311"
-
-  #   volumes:
-  #       - ./arduino/latest/li3ds-Arduino:/root/li3ds-Arduino
-
-  #   stdin_open: true
-  #   tty: true
-  #   command: /bin/zsh
-
-volumes: 
-  rosserial-arduino:
+# url: https://docs.docker.com/compose/compose-file/
+# -> external
+volumes:
+  li3ds_catkin_ws:
+    external: true
