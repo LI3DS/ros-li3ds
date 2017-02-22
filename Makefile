@@ -58,7 +58,7 @@ ros-all:
 
 rosserial:	## rosserial
 rosserial: rosserial-all
-rosserial-all: rosserial-volumes rosserial-images
+rosserial-all: ros rosserial-volumes rosserial-images
 	
 rosserial-volumes:
 	(cd rosserial/latest; create_volume.sh)
@@ -76,7 +76,7 @@ rosserial-images: rosserial-volumes
 ##-------------
 arduino:	## build all (volumes, images, build, (run))
 arduino: arduino-all
-arduino-all: arduino-volumes arduino-images	\
+arduino-all: rosserial arduino-volumes arduino-images	\
 	arduino-configure		\
 	arduino-build			\
 	arduino-upload
