@@ -41,6 +41,21 @@ clean-ins-images:
 
 ##-------------
 
+ros:	## ros for LI3DS [DEV]
+ros: ros-all
+ros-all:
+	(cd ros; 			\
+		if [ ! -f apt.conf ]; then 	\
+			touch apt.conf; 		\
+		fi; 						\
+		if [ ! -f .gitconfig ]; then 	\
+			cp ~/.gitconfig .; 		\
+		fi; 						\
+		build.sh		 			\
+	)
+
+##-------------
+
 rosserial:	## rosserial
 rosserial: rosserial-all
 rosserial-all: rosserial-volumes rosserial-images
