@@ -25,3 +25,12 @@ COPY cmake-3.8.0-rc1.tar.Z /cmake-3.8.0-rc1.tar.Z
 RUN tar xzvf /cmake-3.8.0-rc1.tar.Z
 RUN cd cmake-3.8.0-rc1 && ./configure && make -j3 && make install
 RUN rm /cmake-3.8.0-rc1.tar.Z && rm -r cmake-3.8.0-rc1
+
+# Install Zsh
+# RUN git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh \
+#       && cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc \
+#       && chsh -s /bin/zsh
+
+# # Purge/clean apt
+# RUN apt-get clean                   \
+# 	&& rm -rf /var/lib/apt/lists/*

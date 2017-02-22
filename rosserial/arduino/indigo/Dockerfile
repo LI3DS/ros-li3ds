@@ -1,8 +1,5 @@
-#
-FROM ros:indigo-ros-core
-
-# APT CONF
-COPY apt.conf /etc/apt/apt.conf
+# ROSSERIAL
+FROM li3ds/ros:indigo
 
 RUN apt-get update && \
     apt-get install -y \
