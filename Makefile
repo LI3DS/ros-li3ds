@@ -144,3 +144,25 @@ ins-run:
 	@(	echo; echo "Type 'source entry-point.sh' to set env. vars"; echo; 	\
 		docker exec -it rosnode_li3ds_ins bash								\
 	)
+
+##-------------
+##| LASER     |
+##-------------
+laser:		## build all (volumes, images, build, (run))
+laser: laser-all
+laser-all: ros laser-volumes laser-images laser-build
+
+laser-volumes:
+	(cd laser; create_volume.sh)
+
+laser-images:
+	(cd laser; build.sh)
+
+laser-build:
+	(cd laser; run.sh 'bash -c "/root/build.sh"')
+
+laser-run:
+	@(	echo; echo "Type 'source entry-point.sh' to set env. vars"; echo; 	\
+		docker exec -it rosnode_li3ds_laser bash								\
+	)
+
