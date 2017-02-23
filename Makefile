@@ -35,22 +35,48 @@ clean-ins-images:
 
 ##-------------
 
+.ressources: .apt.conf .gitconfig .proxy.list
+	@echo $@
+
 .apt.conf:
+	@(											\
+		if [ -f /etc/apt/apt.conf ]; then		\
+			cp /etc/apt/apt.conf ressources/.;	\
+		else									\
+			touch ressources/apt.conf;			\
+		fi;										\
+	)
 
 .gitconfig:
+	(											\
+		if [ -f ~/.gitconfig ]; then			\
+			cp ~/.gitconfig ressources/.;		\
+		else									\
+			touch ressources/.gitconfig;		\
+		fi;										\
+	)
+
+# utiliser dans scripts/run.sh
+.proxy.list:
+	@(											\
+		if [ ! -f ressources/proxy.list ]; then	\
+			touch ressources/apt.conf;			\
+		fi;										\
+	)
+
+##-------------
+
+li3ds: li3ds-all
+li3ds-all: ros rosserial arduino ins
 
 ##-------------
 
 ros:	## ros for LI3DS [DEV]
-ros: ros-all
+ros: .ressources ros-all
 ros-all:
-	(cd ros; 			\
-		if [ ! -f apt.conf ]; then 	\
-			touch apt.conf; 		\
-		fi; 						\
-		if [ ! -f .gitconfig ]; then 	\
-			cp ~/.gitconfig .; 		\
-		fi; 						\
+	(cd ros; 										\
+		cp ${LI3DS_RESSOURCES_PATH}/apt.conf .;		\
+		cp ${LI3DS_RESSOURCES_PATH}/.gitconfig .;	\
 		build.sh		 			\
 	)
 
@@ -64,12 +90,7 @@ rosserial-volumes:
 	(cd rosserial/latest; create_volume.sh)
 
 rosserial-images: rosserial-volumes
-	(cd rosserial/latest; 			\
-		if [ ! -f apt.conf ]; then 	\
-			touch apt.conf; 		\
-		fi; 						\
-		build.sh; run.sh 			\
-	)
+	(cd rosserial/latest; build.sh; run.sh )
 
 ##-------------
 ##| ARDUINO   |
@@ -108,28 +129,13 @@ arduino-run:
 ##-------------
 ins:		## build all (volumes, images, build, (run))
 ins: ins-all
-ins-all: ins-volumes ins-images ins-build
+ins-all: ros ins-volumes ins-images ins-build
 
 ins-volumes:
 	(cd ins; create_volume.sh)
 
-#ins-images: ins-volumes
-#	(cd ins; 			\
-#		if [ -f apt.conf ]; then 	\
-#			touch apt.conf; 		\
-#		fi; 						\
-#		build.sh	)
-
 ins-images:
-	(cd ins; 			\
-		if [ ! -f apt.conf ]; then 	\
-			touch apt.conf; 		\
-		fi; 						\
-		if [ ! -f .gitconfig ]; then 	\
-			cp ~/.gitconfig .; 		\
-		fi; 						\
-		build.sh		 			\
-	)
+	(cd ins; build.sh)
 
 ins-build:
 	(cd ins; run.sh 'bash -c "/root/build.sh"')

@@ -2,6 +2,11 @@
 build/
 
 #
+apt.conf
+proxy.list
+.gitconfig
+
+#
 .bash_history
 .lesshst
 

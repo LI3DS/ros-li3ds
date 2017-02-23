@@ -1,13 +1,17 @@
 FROM ros:indigo-ros-core
 
+WORKDIR /root
+
 # Target pour le DEV
 # TODO: faudra en faire une (optimisée) pour l'exécution
 
 ### CONFIGS
 # APT CONF
+#COPY apt.conf /etc/apt/apt.conf
 COPY apt.conf /etc/apt/apt.conf
 # GIT CONFIG
-COPY .gitconfig /root/.gitconfig
+#COPY .gitconfig /root/.gitconfig
+COPY .gitconfig .
 
 ### APT
 # Tools for building
