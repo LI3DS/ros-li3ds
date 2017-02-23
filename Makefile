@@ -11,27 +11,35 @@ help:		## Show this help. (press tab to complete)
 clean:		## clean all (volumes, images, rosserial, arduino, ins)
 clean: clean-volumes clean-images
 
-clean-volumes: clean-rosserial-volumes clean-arduino-volumes clean-ins-volumes
+clean-images: 				\
+	clean-rosserial-images 	\
+	clean-arduino-images 	\
+	clean-ins-images
 
-clean-images: clean-rosserial-images clean-arduino-images clean-ins-images
-
-clean-rosserial-volumes:
-	(cd rosserial/latest; delete_volume.sh 2> /dev/null || true)
-
-clean-arduino-volumes:
-	(cd arduino; delete_volume.sh 2> /dev/null || true)
-
-clean-ins-volumes:
-	(cd ins; delete_volume.sh 2> /dev/null || true)
-	
-clean-arduino-images:
-	(cd arduino; rmi.sh 2> /dev/null || true)
+clean-volumes: 				\
+	clean-rosserial-volumes \
+	clean-arduino-volumes 	\
+	clean-ins-volumes
 
 clean-rosserial-images:
 	(cd rosserial/latest; rmi.sh 2> /dev/null || true)
+clean-rosserial-volumes:
+	(cd rosserial/latest; delete_volume.sh 2> /dev/null || true)
+
+clean-arduino-images:
+	(cd arduino; rmi.sh 2> /dev/null || true)
+clean-arduino-volumes:
+	(cd arduino; delete_volume.sh 2> /dev/null || true)
 
 clean-ins-images:
 	(cd ins; rmi.sh 2> /dev/null || true)
+clean-ins-volumes:
+	(cd ins; delete_volume.sh 2> /dev/null || true)
+
+clean-laser-volumes:
+	(cd laser; rmi.sh 2> /dev/null || true)
+clean-laser-images:
+	(cd laser; delete_volume.sh 2> /dev/null || true)
 
 ##-------------
 
@@ -67,7 +75,7 @@ clean-ins-images:
 ##-------------
 
 li3ds: li3ds-all
-li3ds-all: ros rosserial arduino ins
+li3ds-all: ros rosserial arduino ins laser
 
 ##-------------
 
