@@ -51,8 +51,9 @@ Use a Makefile. docker-compose is not designed to build chains of images, it's d
 
 
 2017-02-21:
+----------
 INS:
-1. Creation de volume: li3ds_overlay_ws
+1. Creation de volume: li3ds_ins_overlay_ws
 2. Build de l'image: li3ds/ins:latest
 3. 
 
@@ -65,3 +66,45 @@ source entry-point.sh
 source ./scripts/create_overlay_ws.sh
 source ./scripts/get_and_build_with_catkin.sh [potentiellement x2]
 launch_roslaunch_on_ellipse_n.sh
+
+
+2017-02-23:
+----------
+Laser:
+- il faut régler l'ip du laser (serveur HTTP du laser)
+- désactiver le proxy pour cette adresse (à vérifier)
+- lancer le node ros du VLP-16: 'launch_server_ros_vlp-16.sh'
+
+export VLP16_NETWORK_SENSOR_IP=172.20.0.191
+source entry-point.sh 
+source scripts/source_install.sh
+export no_proxy="*"
+roslaunch velodyne_pointcloud VLP16_points.launch &
+
+
+Problème majeur: 
+---------------
+Transmission des packets UDP (data) par les ports (2368 par défaut)
+
+urls:
+----
+- https://www.google.fr/search?client=ubuntu&channel=fs&q=docker-compose+upd+network&ie=utf-8&oe=utf-8&gfe_rd=cr&ei=w_iuWLyUApTu8wfkkI_YBA#channel=fs&q=docker-compose+network+udp+from+outside
+- Bind container ports to the host -> https://docs.docker.com/engine/userguide/networking/default_network/binding/
+- Difference between “expose” and “publish” in docker: http://stackoverflow.com/questions/22111060/difference-between-expose-and-publish-in-docker
+- udp port assignment ignored #1334 -> https://github.com/docker/compose/issues/1334
+
+Solution:
+--------
+Dans docker-compose.yml, au niveau de la définition du node 'ros_li3ds_laser':
+ports:
+  - "2368:2368/udp"
+-> map les ports udp 2368 entre localhost et le container.
+On peut vérifier l'établissement de la règle d'iptable:
+┏ ✓    latty@MAC1201W008-LINUX   ~/link_dir/Docker/2017_LI3DS     0.81   0.25G    16:28:28  
+┗ sudo iptables -L -n -t nat | grep 2368        
+MASQUERADE  udp  --  172.18.0.4           172.18.0.4           udp dpt:2368
+DNAT       udp  --  0.0.0.0/0            0.0.0.0/0            udp dpt:2368 to:172.18.0.4:2368
+(après le lancement des containers -> 'docker-compose up')
+(on peut rajouter le port de télémétrie: 8308 (par défaut))
+
+Faudra surement ouvrir des ports (coté Dockerfile avec EXPOSE) pour la communication et le setting du web serveur vélodyne (surement le port 80 (ou 8080)).
