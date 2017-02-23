@@ -48,7 +48,6 @@ clean-laser-images:
 
 .dir_ressources:
 	@(mkdir -p ressources)
-	
 .apt.conf:
 	@(                                          \
 		if [ -f /etc/apt/apt.conf ]; then       \

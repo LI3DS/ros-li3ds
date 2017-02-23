@@ -1,3 +1,5 @@
+[![asciicast](https://asciinema.org/a/7xl3e22hk6atsrw7q8gpuouek.png)](https://asciinema.org/a/7xl3e22hk6atsrw7q8gpuouek)
+
 2017-02-20
 ----------
 
@@ -119,3 +121,27 @@ DNAT       udp  --  0.0.0.0/0            0.0.0.0/0            udp dpt:2368 to:17
 (on peut rajouter le port de télémétrie: 8308 (par défaut))
 
 Faudra surement ouvrir des ports (coté Dockerfile avec EXPOSE) pour la communication et le setting du web serveur vélodyne (surement le port 80 (ou 8080)).
+
+
+---------------------------------------------------------------------------
+
+Mapping des devices (USB) dans docker (docker-compose)
+------------------------------------------------------
+
+Deux versions pour mapper les périphériques/devices USB/ACM
+1. Soit une version ciblée précisement sur un filepath particulier
+```
+devices:
+	- "/dev/ttyACM0:/dev/ttyACM0"
+```
+2. Une version plus généraliste (et permissive),
+on transmet tous les devices disponibles de l'host au container
+```
+    privileged: true
+    volumes:
+      - "/dev/bus/usb:/dev/bus/usb"
+```
+
+Si on utilise la solution 1., il faut (mieux) passer par des règles
+d'attribution de filepath aux devices via des udev rules
+-> voir [2017 - LINUX - USB devices (Arduino) finding, associating, etc ...](https://docs.google.com/document/d/1-pBXbnUNzUmnedP8WQysDRGHMco5L_GiBVGlq_oeYp4/edit?usp=sharing)

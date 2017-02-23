@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 # version de docker-compose utilise
 
 # urls:
@@ -9,13 +9,19 @@ services:
 
   ros_master:
     image: ros:indigo-ros-core
+
     container_name: rosnode_master
+    hostname: rosmaster
+
+    ports:
+      - "11311:11311"
     command:
         - roscore
 
   # Definition du ROS Node pour l'Arduino
   ros_li3ds_arduino:
     container_name: rosnode_li3ds_arduino
+    hostname: ros_li3ds_arduino
 
     image: li3ds/arduino:latest
 
@@ -33,11 +39,16 @@ services:
 
   ros_li3ds_ins:
     container_name: rosnode_li3ds_ins
+    hostname: ros_li3ds_ins
 
     image: li3ds/ins:latest
 
-    devices:
-      - "/dev/ttyUSB0:/dev/ttyUSB0"
+    #devices:
+    #  - "/dev/ttyUSB0:/dev/ttyUSB0"
+    #
+    privileged: true
+    volumes:
+      - "/dev/bus/usb:/dev/bus/usb"
 
     depends_on:
       - "ros_master"
@@ -53,6 +64,7 @@ services:
 
   ros_li3ds_laser:
     container_name: rosnode_li3ds_laser
+    hostname: ros_li3ds_laser
 
     image: li3ds/laser:latest
 
