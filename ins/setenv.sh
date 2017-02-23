@@ -13,7 +13,7 @@ DOCKER_RUN_OPTIONS+="						\
 -v li3ds_catkin_ws:/catkin_ws "
 #
 #DOCKER_RUN_OPTIONS+=" --no-cache "
-DOCKER_RUN_OPTIONS+=" -v li3ds_overlay_ws:/root/overlay_ws "
+DOCKER_RUN_OPTIONS+=" -v li3ds_ins_overlay_ws:/root/overlay_ws "
 DOCKER_RUN_OPTIONS+=" -v $(realpath ./scripts):/root/scripts "
 
 # share USB/serial sbg ellipse-n device
@@ -21,4 +21,4 @@ DOCKER_RUN_OPTIONS+=" -v $(realpath ./scripts):/root/scripts "
 DOCKER_RUN_OPTIONS+=" --privileged -v /dev/bus/usb:/dev/bus/usb "
 
 DOCKER_VOLUME_DRIVER="local"
-DOCKER_VOLUME_NAME="li3ds_overlay_ws"
+DOCKER_VOLUME_NAME="li3ds_ins_overlay_ws"
