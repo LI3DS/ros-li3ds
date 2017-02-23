@@ -7,16 +7,14 @@ arduino
 => partage des builds (images docker), des volumes (ros, catkin)
 
 Questions ?
+----------
 - Comment on gère le build des images et la spécification des tags, options, etc ... ?
 => peut être utiliser un script python (plus intelligent qu'un .sh) qui pourrait prendre en compte
-un fichier de settings (.yaml ou .json) pour builder des images.
-Il pourrait chercher dans le répertoire courant de construction de l'image, la présence d'un fichier de config
+
+un fichier de settings (.yaml ou .json) pour builder des images. Il pourrait chercher dans le répertoire courant de construction de l'image, la présence d'un fichier de config
 et l'utiliser le cas échéant (ou utiliser des options par défaut, définies par l'application/script)
 
-
-rosserial:arduino:
-
-Hérite de ros:indigo (core, base, ...)
+rosserial:arduino: Hérite de ros:indigo (core, base, ...)
 
 ---------------------------------------------------------------------------
 
@@ -25,7 +23,6 @@ Hérite de ros:indigo (core, base, ...)
 	- cmake
 		- toolchain arduinocmake
 		- url: https://cmake.org/files/
-
 2. INS: Ellipse-N
 	- Docker
 	- outils de compilation: build-essential
@@ -47,17 +44,21 @@ urls:
 
 http://stackoverflow.com/questions/37933204/building-common-dependencies-with-docker-compose
 
+```
 Use a Makefile. docker-compose is not designed to build chains of images, it's designed for running containers.
+```
 
 
 2017-02-21:
 ----------
-INS:
+
+INS
+---
 1. Creation de volume: li3ds_ins_overlay_ws
 2. Build de l'image: li3ds/ins:latest
-3. 
 
 !!!! Il faut que la var env ROS_CATKIN_WS soit set !!!!
+```bash
 # echo $ROS_CATKIN_WS/
 /catkin_ws/
 
@@ -66,23 +67,27 @@ source entry-point.sh
 source ./scripts/create_overlay_ws.sh
 source ./scripts/get_and_build_with_catkin.sh [potentiellement x2]
 launch_roslaunch_on_ellipse_n.sh
-
+```
 
 2017-02-23:
 ----------
-Laser:
+
+Laser
+-----
+
 - il faut régler l'ip du laser (serveur HTTP du laser)
 - désactiver le proxy pour cette adresse (à vérifier)
 - lancer le node ros du VLP-16: 'launch_server_ros_vlp-16.sh'
 
+```bash
 export VLP16_NETWORK_SENSOR_IP=172.20.0.191
-source entry-point.sh 
+source entry-point.sh
 source scripts/source_install.sh
 export no_proxy="*"
 roslaunch velodyne_pointcloud VLP16_points.launch &
+```
 
-
-Problème majeur: 
+Problème majeur
 ---------------
 Transmission des packets UDP (data) par les ports (2368 par défaut)
 
@@ -97,13 +102,19 @@ Solution:
 --------
 Dans docker-compose.yml, au niveau de la définition du node 'ros_li3ds_laser':
 ports:
-  - "2368:2368/udp"
+```
+	"2368:2368/udp"
+```
+
 -> map les ports udp 2368 entre localhost et le container.
+
 On peut vérifier l'établissement de la règle d'iptable:
-┏ ✓    latty@MAC1201W008-LINUX   ~/link_dir/Docker/2017_LI3DS     0.81   0.25G    16:28:28  
+```
+┏ ✓    latty@MAC1201W008-LINUX   ~/link_dir/Docker/2017_LI3DS     0.81   0.25G    16:28:28 
 ┗ sudo iptables -L -n -t nat | grep 2368        
 MASQUERADE  udp  --  172.18.0.4           172.18.0.4           udp dpt:2368
 DNAT       udp  --  0.0.0.0/0            0.0.0.0/0            udp dpt:2368 to:172.18.0.4:2368
+```
 (après le lancement des containers -> 'docker-compose up')
 (on peut rajouter le port de télémétrie: 8308 (par défaut))
 
