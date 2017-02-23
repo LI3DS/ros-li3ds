@@ -1,6 +1,10 @@
-# url: http://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+# urls: 
+# - http://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
 RED='\033[0;31m'
 YELLOW='\033[0;33m'
+GREEN='\033[0;32m'        # GREEN
+BLUE='\033[0;34m'         # BLUE
+CYAN='\033[0;36m'         # CYAN
 NC='\033[0m' # No Color
 
 echo_c () {
@@ -33,7 +37,6 @@ USE_TUPLES_LIST() {
 			[ -n "$1" ] &&
 			eval $CALLBACK_ECHO
 			eval $(eval echo '$CALLBACK_CMD')	# ok
-			# wstool set -y $1 --git $2	# ok
 		};
 	done
 }
