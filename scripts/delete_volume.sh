@@ -2,4 +2,4 @@
 
 source ./setenv.sh
 
-docker volume rm $DOCKER_VOLUME_NAME 
+docker volume rm --force $DOCKER_VOLUME_NAME
