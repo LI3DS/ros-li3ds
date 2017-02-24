@@ -1,0 +1,3 @@
+[submodule "docs"]
+	path = docs
+	url = https://github.com/LI3DS/ros-li3ds.wiki.git
