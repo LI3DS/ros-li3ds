@@ -77,7 +77,13 @@ clean-laser-images:
 ##-------------
 
 li3ds: li3ds-all
-li3ds-all: ros rosserial arduino ins laser
+# dev
+# qtcreator
+li3ds-all: ros 	\
+	rosserial 	\
+	arduino 	\
+	ins 		\
+	laser
 
 ##-------------
 
@@ -92,22 +98,66 @@ ros-all:
 
 ##-------------
 
+dev: dev-all
+dev-all: ros dev-volumes dev-images
+
+dev-volumes:
+	(	\
+		docker volume create --driver local --name li3ds_dev_overlay_ws;	\
+		docker volume create --driver local --name li3ds_dev_catkin_ws		\
+	)
+
+dev-images:
+	(cd dev; build.sh)
+
+dev-run:
+	(  echo; echo ""; echo;		\
+		cd dev;			\
+		xhost +;				\
+		run.sh "bash"	\
+	)
+
+##-------------
+
+qtcreator: qtcreator-all
+qtcreator-all: dev qtcreator-images
+
+qtcreator-images:
+	(cd qtcreator; build.sh)
+
+qtcreator-run:
+	(  echo; echo ""; echo;		\
+		cd qtcreator;			\
+		xhost +;				\
+		run.sh "zsh"			\
+	)
+
+##-------------
+
 rosserial:  ## rosserial
 rosserial: rosserial-all
 rosserial-all: ros rosserial-volumes rosserial-images
+
+# rosserial-all: dev rosserial-images
 	
 rosserial-volumes:
-	(cd rosserial/latest; create_volume.sh)
+	(cd rosserial; create_volume.sh)
 
 rosserial-images: rosserial-volumes
-	(cd rosserial/latest; build.sh; run.sh )
+	(cd rosserial; build.sh; run.sh )
+	# (cd rosserial/latest; build.sh; run.sh )
+
+# rosserial-images:
+# 	(cd rosserial; build.sh; run.sh )
 
 ##-------------
 ##| ARDUINO   |
 ##-------------
 arduino:    ## build all (volumes, images, build, (run))
 arduino: arduino-all
-arduino-all: rosserial arduino-volumes arduino-images   \
+# arduino-all: rosserial arduino-volumes arduino-images
+arduino-all: rosserial 		\
+	arduino-images   		\
 	arduino-configure       \
 	arduino-build           \
 	arduino-upload
@@ -140,6 +190,7 @@ arduino-run:
 ins:        ## build all (volumes, images, build, (run))
 ins: ins-all
 ins-all: ros ins-volumes ins-images ins-build
+# ins-all: ros ins-images ins-build
 
 ins-volumes:
 	(cd ins; create_volume.sh)
@@ -161,6 +212,7 @@ ins-run:
 laser:      ## build all (volumes, images, build, (run))
 laser: laser-all
 laser-all: ros laser-volumes laser-images laser-build
+# laser-all: ros laser-images laser-build
 
 laser-volumes:
 	(cd laser; create_volume.sh)
